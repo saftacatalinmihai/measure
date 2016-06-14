@@ -12,14 +12,14 @@ memory(F) ->
 
   Pid = spawn(fun() ->
     {memory, M0} = erlang:process_info(self(), memory),
-    F(),
+    Res = F(),
     {memory, M1} = erlang:process_info(self(), memory),
 
-    Parent ! {self(), M1 - M0}
+    Parent ! {self(),{Res, M1 - M0}}
   end),
 
   receive
-    {Pid, Bytes} when is_integer(Bytes) -> Bytes
+    {Pid, {Res, Bytes}} when is_integer(Bytes) -> Bytes
   end.
 
 %%====================================================================
